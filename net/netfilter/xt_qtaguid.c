@@ -739,7 +739,7 @@ static int iface_stat_fmt_proc_show(struct seq_file *m, void *v)
 {
 	struct proc_iface_stat_fmt_info *p = m->private;
 	struct iface_stat *iface_entry;
-	struct rtnl_link_stats64 dev_stats, *stats;
+	struct rtnl_link_stats64 *stats;
 	struct rtnl_link_stats64 no_dev_stats = {0};
 
 
@@ -747,13 +747,7 @@ static int iface_stat_fmt_proc_show(struct seq_file *m, void *v)
 		 current->pid, current->tgid, from_kuid(&init_user_ns, current_fsuid()));
 
 	iface_entry = list_entry(v, struct iface_stat, list);
-
-	if (iface_entry->active) {
-		stats = dev_get_stats(iface_entry->net_dev,
-				      &dev_stats);
-	} else {
-		stats = &no_dev_stats;
-	}
+        stats = &no_dev_stats; 
 	/*
 	 * If the meaning of the data changes, then update the fmtX
 	 * string.
@@ -894,7 +888,7 @@ static struct iface_stat *iface_alloc(struct net_device *net_dev)
 static void iface_check_stats_reset_and_adjust(struct net_device *net_dev,
 					       struct iface_stat *iface)
 {
-	struct rtnl_link_stats64 dev_stats, *stats;
+	struct rtnl_link_stats64 *stats;
 	bool stats_rewound;
 
 	stats = dev_get_stats(net_dev, &dev_stats);
@@ -1114,7 +1108,7 @@ data_counters_update(struct data_counters *dc, int set,
  */
 static void iface_stat_update(struct net_device *net_dev, bool stash_only)
 {
-	struct rtnl_link_stats64 dev_stats, *stats;
+	struct rtnl_link_stats64 *stats;
 	struct iface_stat *entry;
 
 	stats = dev_get_stats(net_dev, &dev_stats);
